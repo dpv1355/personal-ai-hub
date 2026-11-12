@@ -4,7 +4,7 @@ const DEFAULT_MODELS=[
  {id:"deepseek:deepseek-chat",name:"DeepSeek Chat",provider:"deepseek",model:"deepseek-chat",kind:"cloud"},
  {id:"groq:llama-3.3-70b-versatile",name:"Llama 3.3 70B (Groq)",provider:"groq",model:"llama-3.3-70b-versatile",kind:"cloud"},
  {id:"openrouter:deepseek/deepseek-chat",name:"DeepSeek via OpenRouter",provider:"openrouter",model:"deepseek/deepseek-chat",kind:"cloud"},
- {id:"gemini:gemini-2.0-flash",name:"Gemini Flash",provider:"gemini",model:"gemini-2.0-flash",kind:"cloud"}
+ {id:"gemini:gemini-3.8-flash",name:"Gemini 3.8 Flash",provider:"gemini",model:"gemini-3.8-flash",kind:"cloud"}
 ];
 let models=[...DEFAULT_MODELS], chats=[], activeChat=null, importedText="";
 const DB="personal-ai-hub", STORE="chats";
