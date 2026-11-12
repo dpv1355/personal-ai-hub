@@ -17,7 +17,7 @@
       <button class="nav-btn" data-panel="settings">⚙ تنظیمات و اتصال‌ها</button>
       <button class="nav-btn" data-panel="import">⇧ ورود آرشیو</button>
     </div>
-    <div class="footnote">نسخه آزمایشی 0.1 · ذخیره محلی</div>
+    <div class="footnote">نسخه آزمایشی 0.2 · ذخیره محلی</div>
   </aside>
   <main class="main">
     <header class="topbar"><div><span class="status-dot"></span><span id="connectionLabel">آماده اتصال</span></div><button id="clearChat" class="ghost">پاک‌کردن گفتگو</button></header>
@@ -51,7 +51,7 @@
     </section>
     <section id="settingsPanel" class="panel page-panel hidden">
       <h2>تنظیمات و اتصال‌ها</h2>
-      <div class="section-card"><h3>نشانی Cloudflare Worker</h3><p class="muted">نشانی Worker منتشرشده خود را وارد کنید؛ نمونه: https://your-worker.your-subdomain.workers.dev</p><label>Worker URL<input id="workerUrl" placeholder="https://...workers.dev"></label><button id="saveSettings" class="primary">ذخیره تنظیمات</button><button id="testConnection" class="secondary">آزمایش اتصال</button><span id="testResult" class="muted"></span></div>
+      <div class="section-card"><h3>نشانی Cloudflare Worker</h3><p class="muted">نشانی Worker منتشرشده خود را وارد کنید؛ نمونه: https://your-worker.your-subdomain.workers.dev</p><label>Worker URL<input id="workerUrl" placeholder="https://...workers.dev"></label><label>رمز دسترسی برنامه<input id="appPassword" type="password" autocomplete="current-password" placeholder="رمزی که در Cloudflare ثبت می‌کنی"></label><button id="saveSettings" class="primary">ذخیره تنظیمات</button><button id="testConnection" class="secondary">آزمایش اتصال</button><span id="testResult" class="muted"></span></div>
       <div class="section-card"><h3>کلیدهای API</h3><p class="warning">کلیدها را در بخش Secrets داشبورد Cloudflare یا با دستور wrangler secret put تنظیم کنید. هرگز کلید را در GitHub، HTML یا LocalStorage قرار ندهید.</p>
         <ul><li><code>OPENAI_API_KEY</code></li><li><code>DEEPSEEK_API_KEY</code></li><li><code>GROQ_API_KEY</code></li><li><code>OPENROUTER_API_KEY</code></li><li><code>GEMINI_API_KEY</code></li></ul>
       </div>

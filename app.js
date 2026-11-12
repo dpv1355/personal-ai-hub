@@ -12,8 +12,8 @@ function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB,1);r.
 async function dbPut(v){const d=await openDB();return new Promise((res,rej)=>{let t=d.transaction(STORE,"readwrite");t.objectStore(STORE).put(v);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
 async function dbAll(){const d=await openDB();return new Promise((res,rej)=>{let r=d.transaction(STORE).objectStore(STORE).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function dbClear(){const d=await openDB();return new Promise(res=>{let t=d.transaction(STORE,"readwrite");t.objectStore(STORE).clear();t.oncomplete=res})}
-function settings(){return JSON.parse(localStorage.getItem("pah-settings")||"{}")}
-function saveSettings(){let s=settings();s.workerUrl=$("workerUrl").value.trim().replace(/\/$/,"");localStorage.setItem("pah-settings",JSON.stringify(s));$("testResult").textContent="تنظیمات ذخیره شد."}
+function settings(){const s=JSON.parse(localStorage.getItem("pah-settings")||"{}");s.appPassword=sessionStorage.getItem("pah-app-password")||"";return s}
+function saveSettings(){let s=JSON.parse(localStorage.getItem("pah-settings")||"{}");s.workerUrl=$("workerUrl").value.trim().replace(/\/$/,"");localStorage.setItem("pah-settings",JSON.stringify(s));sessionStorage.setItem("pah-app-password",$("appPassword").value);$("testResult").textContent="تنظیمات ذخیره شد. رمز تا پایان این نشست مرورگر نگهداری می‌شود."}
 function modelOptions(sel){sel.innerHTML=models.map(m=>`<option value="${escapeAttr(m.id)}">${escapeHtml(m.name)} · ${m.kind==="local"?"محلی":"ابری"}</option>`).join("")}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function escapeAttr(s){return escapeHtml(s)}
@@ -25,7 +25,7 @@ async function loadChat(id){activeChat=chats.find(c=>c.id===id)||await (async()=
 function selectedModel(id){return models.find(m=>m.id===id)||models[0]}
 async function askCloud(m, messages){
  const s=settings();if(!s.workerUrl)throw Error("ابتدا نشانی Cloudflare Worker را در تنظیمات وارد کنید.");
- const r=await fetch(s.workerUrl+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({provider:m.provider,model:m.model,messages,stream:false})});
+ const r=await fetch(s.workerUrl+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json","X-App-Password":s.appPassword||""},body:JSON.stringify({provider:m.provider,model:m.model,messages,stream:false})});
  const data=await r.json().catch(()=>({error:"پاسخ نامعتبر از سرور"}));if(!r.ok)throw Error(data.error||`خطای سرور ${r.status}`);
  return data.content||data.choices?.[0]?.message?.content||"پاسخی دریافت نشد.";
 }
@@ -54,7 +54,7 @@ function renderModels(){$("modelCards").innerHTML=models.map(m=>`<div class="mod
 function showPanel(name){document.querySelectorAll(".panel").forEach(p=>p.classList.add("hidden"));$(name+"Panel").classList.remove("hidden");document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.panel===name))}
 function download(name,content){let a=document.createElement("a"),u=URL.createObjectURL(new Blob([content],{type:"application/json"}));a.href=u;a.download=name;a.click();URL.revokeObjectURL(u)}
 async function init(){
- const s=settings();$("workerUrl").value=s.workerUrl||"";
+ const s=settings();$("workerUrl").value=s.workerUrl||"";$("appPassword").value=s.appPassword||"";
  chats=await dbAll();renderHistory();modelOptions($("modelSelect"));modelOptions($("compareSelect"));renderModels();
  if(chats.length)await loadChat(chats.sort((a,b)=>b.updated-a.updated)[0].id);else newChat();
  document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>showPanel(b.dataset.panel));
