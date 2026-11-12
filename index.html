@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#111827"><title>Personal AI Hub</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">✦</span><div><b>Personal AI Hub</b><small>مرکز یکپارچه هوش مصنوعی</small></div></div>
+    <button id="newChat" class="primary full">＋ گفت‌وگوی جدید</button>
+    <div class="side-label">گفت‌وگوها</div><div id="history" class="history"></div>
+    <div class="side-bottom">
+      <button class="nav-btn active" data-panel="chat">◉ چت</button>
+      <button class="nav-btn" data-panel="models">▦ مرکز مدل‌ها</button>
+      <button class="nav-btn" data-panel="settings">⚙ تنظیمات و اتصال‌ها</button>
+      <button class="nav-btn" data-panel="import">⇧ ورود آرشیو</button>
+    </div>
+    <div class="footnote">نسخه آزمایشی 0.1 · ذخیره محلی</div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><span class="status-dot"></span><span id="connectionLabel">آماده اتصال</span></div><button id="clearChat" class="ghost">پاک‌کردن گفتگو</button></header>
+    <section id="chatPanel" class="panel chat-panel">
+      <div id="messages" class="messages">
+        <div class="welcome"><div class="welcome-icon">✦</div><h1>یک مرکز، چندین هوش مصنوعی</h1><p>مدل ابری یا محلی را انتخاب کنید و گفتگو را آغاز کنید.</p></div>
+      </div>
+      <div class="composer-wrap">
+        <div class="composer-tools">
+          <select id="modelSelect" aria-label="انتخاب مدل"></select>
+          <label class="toggle"><input type="checkbox" id="autoMode"> انتخاب خودکار و تلاش مجدد</label>
+          <label class="toggle"><input type="checkbox" id="compareMode"> مقایسه دو مدل</label>
+          <select id="compareSelect" class="hidden" aria-label="مدل دوم"></select>
+        </div>
+        <div class="composer"><textarea id="prompt" rows="1" placeholder="پیام خود را بنویسید... (Enter برای ارسال، Shift+Enter برای خط جدید)"></textarea><button id="send" class="send">ارسال ↑</button></div>
+        <div class="hint">پاسخ‌ها از طریق Worker عبور می‌کنند. کلیدهای API در کد مرورگر ذخیره نمی‌شوند.</div>
+      </div>
+    </section>
+    <section id="modelsPanel" class="panel page-panel hidden">
+      <h2>مرکز مدل‌ها</h2><p class="muted">مدل‌های ابری و محلی در یک فهرست. مدل محلی به اجرای Ollama یا LM Studio روی رایانه نیاز دارد.</p>
+      <div class="cards" id="modelCards"></div>
+      <div class="section-card"><h3>افزودن مدل OpenAI-compatible</h3><div class="form-grid">
+        <label>نام نمایشی<input id="customName" placeholder="مثلاً DeepSeek آزمایشی"></label>
+        <label>شناسه مدل<input id="customModel" placeholder="deepseek-chat"></label>
+        <label>نشانی Base URL<input id="customBase" placeholder="https://api.example.com/v1"></label>
+        <label>شناسه Provider<input id="customId" placeholder="my-provider"></label>
+      </div><button id="addCustom" class="primary">افزودن به فهرست</button></div>
+      <div class="section-card"><h3>مدل محلی</h3><p class="muted">برای اتصال از همین مرورگر، آدرس API محلی باید از مرورگر قابل دسترسی باشد و CORS فعال باشد.</p>
+        <div class="form-grid"><label>نام نمایشی<input id="localName" value="Ollama محلی"></label><label>نشانی API<input id="localUrl" value="http://localhost:11434/v1"></label><label>شناسه مدل نصب‌شده<input id="localModel" placeholder="llama3.2"></label></div>
+        <button id="addLocal" class="primary">افزودن مدل محلی</button></div>
+    </section>
+    <section id="settingsPanel" class="panel page-panel hidden">
+      <h2>تنظیمات و اتصال‌ها</h2>
+      <div class="section-card"><h3>نشانی Cloudflare Worker</h3><p class="muted">نشانی Worker منتشرشده خود را وارد کنید؛ نمونه: https://your-worker.your-subdomain.workers.dev</p><label>Worker URL<input id="workerUrl" placeholder="https://...workers.dev"></label><button id="saveSettings" class="primary">ذخیره تنظیمات</button><button id="testConnection" class="secondary">آزمایش اتصال</button><span id="testResult" class="muted"></span></div>
+      <div class="section-card"><h3>کلیدهای API</h3><p class="warning">کلیدها را در بخش Secrets داشبورد Cloudflare یا با دستور wrangler secret put تنظیم کنید. هرگز کلید را در GitHub، HTML یا LocalStorage قرار ندهید.</p>
+        <ul><li><code>OPENAI_API_KEY</code></li><li><code>DEEPSEEK_API_KEY</code></li><li><code>GROQ_API_KEY</code></li><li><code>OPENROUTER_API_KEY</code></li><li><code>GEMINI_API_KEY</code></li></ul>
+      </div>
+      <div class="section-card"><h3>حریم خصوصی</h3><p>تاریخچه گفتگو و آرشیوهای واردشده فقط در IndexedDB همین مرورگر نگهداری می‌شوند. پیام ارسالی برای دریافت پاسخ به سرویس انتخاب‌شده منتقل خواهد شد.</p><button id="exportData" class="secondary">خروجی گرفتن از تاریخچه (JSON)</button><button id="deleteData" class="danger">حذف همه داده‌های محلی</button></div>
+    </section>
+    <section id="importPanel" class="panel page-panel hidden">
+      <h2>ورود آرشیو گفتگوها</h2><p class="muted">فایل‌های JSON، TXT و Markdown پشتیبانی می‌شوند. در این نسخه، قالب‌های متنوع خروجی ChatGPT و Claude ممکن است به تطبیق قالب نیاز داشته باشند.</p>
+      <div class="section-card"><input type="file" id="archiveFile" accept=".json,.txt,.md,.markdown"><button id="previewImport" class="primary">بررسی فایل</button><div id="importPreview" class="muted"></div><button id="confirmImport" class="secondary hidden">واردکردن به تاریخچه</button></div>
+    </section>
+  </main>
+</div>
+<script src="./app.js"></script>
+</body></html>
